@@ -1,6 +1,6 @@
 {
   "name": "file-droppa",
-  "version": "0.7.1",
+  "version": "0.7.4",
   "description": "Angular2 (ng2) Files dropable area plus list of files",
   "repository": {
     "type": "git",
@@ -9,7 +9,6 @@
   "scripts": {
     "tsc": "tsc",
     "deploy": "NODE_ENV=production webpack -p --progress --color --optimize-minimize --optimize-dedupe --optimize-occurence-order",
-    "prepublish": "gulp clean && tsc",
     "server": "webpack-dev-server --hot --inline --colors --display-error-details --display-cached",
     "start": "npm run server",
     "test": "gulp lint"
