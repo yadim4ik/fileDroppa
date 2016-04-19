@@ -6,11 +6,18 @@ import {FileWrapper} from "./FileWrapper.service";
 @Injectable()
 export class FilesStore {
     public fileUploaded = new EventEmitter(true);
-    public uploadConfig = {};
+    public uploadConfig;
 
     private WSfiles:WeakSet<File> = new WeakSet();
     private _iFiles:Array<iFile> = [];
 
+    private isFileValid(file:File){
+        if(!this.uploadConfig.validateFile ||
+            (typeof this.uploadConfig.validateFile==="function" && this.uploadConfig.validateFile(file))){
+            return true;
+        }
+        return false;
+    }
     public get files():Array<File> {
         return this.iFiles.reduce((res, iFile:iFile)=> {
             res.push(iFile.File);
@@ -28,7 +35,7 @@ export class FilesStore {
 
     public addFiles(files):void {
         files = files.filter((file)=> {
-            if (!this.WSfiles.has(file)) {
+            if (!this.WSfiles.has(file) && this.isFileValid(file)) {
                 this.WSfiles.add(file);
                 return true;
             }
