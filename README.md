@@ -14,6 +14,8 @@ npm install --save file-droppa
 **Whole functionality with droppable area, files list and styles you can apply with:**
 
 ```
+import {FileDropZone} from 'file-droppa';
+
 @Component({
     selector: 'my-app',
     directives: [FileDropZone],
@@ -68,7 +70,7 @@ export class AppComponent {
 **If you are looking for just a droppable area and you want to apply you own styles and html markup:**
 
 ```
-import {FileDroppa} from './FileDroppa';
+import {FileDroppa} from 'file-droppa';
 
 @Component({
     selector: 'fileDropZone',
