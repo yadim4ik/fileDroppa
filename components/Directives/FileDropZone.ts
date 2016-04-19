@@ -2,6 +2,7 @@ import {Component, Input, EventEmitter, Output} from 'angular2/core';
 import {FileDroppa} from './FileDroppa';
 import {FileList} from './FileList';
 import {FilesStore} from "../Services/FileStore.service";
+import {File} from "./File";
 
 @Component({
     selector: 'fileDropZone',
@@ -49,7 +50,8 @@ export class FileDropZone {
         autoUpload:false,
         requestHeaders:{},
         customClass: 'file_droppa_internal',
-        beforeUpload:null
+        beforeUpload:null,
+        validateFile: null
     };
     public uploadFiles = new EventEmitter();
     public removeAllFiles = new EventEmitter();

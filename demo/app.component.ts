@@ -1,3 +1,5 @@
+///<reference path="../node_modules/typescript/lib/lib.es6.d.ts" />
+
 import {Component, EventEmitter} from 'angular2/core';
 import {FileDropZone} from '../index'
 
@@ -19,11 +21,17 @@ export class AppComponent {
             overCls: "customDrop",
             autoUpload: false,
             uploadUrl: "https://salty-taiga-80701.herokuapp.com/upload",
-            beforeUpload: this.beforeUpload
+            beforeUpload: this.beforeUpload,
+            validateFile: this.validateFile
             //requestHeaders:{
             //    'X-Content':'xxx'
             //}
         };
+    }
+
+    validateFile(file){
+        //You can provide any file validation you want here
+        return true;
     }
 
     beforeUpload(file){
