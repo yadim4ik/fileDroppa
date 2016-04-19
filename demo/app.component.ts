@@ -1,5 +1,3 @@
-///<reference path="../node_modules/angular2/typings/browser.d.ts" />
-
 import {Component, EventEmitter} from 'angular2/core';
 import {FileDropZone} from '../index'
 
