@@ -14,6 +14,8 @@ npm install --save file-droppa
 **Whole functionality with droppable area, files list and styles you can apply with:**
 
 ```
+import {FileDropZone} from 'file-droppa';
+
 @Component({
     selector: 'my-app',
     directives: [FileDropZone],
@@ -41,10 +43,17 @@ export class AppComponent {
         };
     }
 
-    //Return object which will be appended in formData
+    //Return object which will be appended in formData or if you make any async changes here like FILE RESIZE return Promise
     //Read - https://developer.mozilla.org/ru/docs/Web/API/FormData/append
     beforeUpload(file){
         return ["nameYouLike", file];
+        //OR return PROMISE
+        //return new Promise((res, rej)=>{
+        //   DO ANY ASYNC OPERATIONS 
+        //   setTimeout(()=>{
+        //       res(["nameYouLike", file]);
+        //   },1000)
+        //});
     }
 
     fileUploaded([success, response, file]){
@@ -61,7 +70,7 @@ export class AppComponent {
 **If you are looking for just a droppable area and you want to apply you own styles and html markup:**
 
 ```
-import {FileDroppa} from './FileDroppa';
+import {FileDroppa} from 'file-droppa';
 
 @Component({
     selector: 'fileDropZone',
