@@ -36,11 +36,17 @@ export class AppComponent {
             autoUpload: false,//**Optional**
             uploadUrl: "https://salty-taiga-80701.herokuapp.com/upload",
             beforeUpload: this.beforeUpload,//**Optional**function will be calles before upload to update formData parameters
+            validateFile: this.validateFile,//This function will receive each dropped or selected file
             requestHeaders:{//**Optional**Request headers will be added in request
                 'X-Content':'xxx',
                 'X-Hello':'World'
             }
         };
+    }
+    
+    validateFile(file){
+        //You can provide any file validation you want here. File size, type, etc...
+        return true;
     }
 
     //Return object which will be appended in formData or if you make any async changes here like FILE RESIZE return Promise
