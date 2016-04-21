@@ -50,7 +50,9 @@ export class FilesStore {
     }
 
     public notifyFileUploaded(success, response, iFile){
-        success && this.removeFiles(iFile);
+        if(this.uploadConfig.removeWhenUploaded && success){
+            this.removeFiles(iFile);
+        }
         this.fileUploaded.emit([success, response, iFile.File]);
     }
 

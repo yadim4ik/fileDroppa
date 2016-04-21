@@ -7,7 +7,7 @@ export interface iFile {
     loading:boolean,
     percentage:number,
     id:string,
-    loadingSuccessful:boolean,
+    loadingSuccessful:any,
     fileUploaded:any,
     uploader:FileUpload
 }
@@ -18,7 +18,7 @@ export class FileWrapper {
     public percentage = 0;
     public removing = false;
     public id = Math.random().toString(36).substr(2);
-    public loadingSuccessful = false;
+    public loadingSuccessful = null;
     public fileUploaded = new EventEmitter(false);
     public uploader = null;
 

@@ -19,6 +19,7 @@ export class AppComponent {
     constructor() {
         this.fileDroppaConfig = {
             overCls: "customDrop",
+            removeWhenUploaded: false,
             autoUpload: false,
             uploadUrl: "https://salty-taiga-80701.herokuapp.com/upload",
             beforeUpload: this.beforeUpload,
