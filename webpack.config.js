@@ -52,7 +52,7 @@ var config = {
             'angular2/common',
             'angular2/core'
         ],
-        'file-droppa': ['index.js'],
+        'file-droppa': ['index'],
         'file-droppa-demo': 'demo'
     },
 

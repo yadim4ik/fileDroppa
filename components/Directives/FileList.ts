@@ -18,11 +18,13 @@ import {iFile} from "../Services/FileWrapper.service";
     `],
     template: `
     <div class="file-list">
-        <fileItem *ngFor="#file of files; #i = index" 
+        <fileItem *ngFor="let file of files; let i = index"
             [file]="file.File" 
             [index]="i" 
             [percentage]="file.percentage"
             [uploaded]="file.loadingSuccessful"
+            [loading]="file.loading"
+            (onRemoveFileFromServer)="onRemoveFileFromServer(file, i)"
             (removeFile)="removeFile(file, i)">
         </fileItem>
     </div>
@@ -64,6 +66,10 @@ export class FileList {
         });
         this.filesStore.clearStore();
         this.notifyFilesUpdated.emit(this.filesStore.files);
+    }
+
+    onRemoveFileFromServer(iFile:iFile, i){
+        iFile.uploader.removeFileFromServer();
     }
 
     removeFile(iFile:iFile, i) {

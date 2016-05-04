@@ -51,7 +51,8 @@ export class FileDropZone {
         requestHeaders:{},
         customClass: 'file_droppa_internal',
         beforeUpload:null,
-        validateFile: null
+        validateFile: null,
+        removeWhenUploaded:true
     };
     public uploadFiles = new EventEmitter();
     public removeAllFiles = new EventEmitter();
@@ -67,7 +68,7 @@ export class FileDropZone {
     };
 
     @Input() set config(config) {
-        this._config = config ? Object.assign(this._config, config) : this._config;
+        this._config = config ? Object.assign({}, this._config, config) : this._config;
         this.filesStore.uploadConfig = this._config;
     }
 

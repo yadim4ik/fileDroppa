@@ -16,14 +16,8 @@ import {GetSizePipe} from '../Pipes/GetSize.pipe';
             flex-direction: column;
 
         }
-        
-        .file-container.uploaded {
-            opacity: 0;
-            margin: 0;
-            height: 0;
-            overflow: hidden;
-        }
-        
+
+
         .flex-block {
             width: 90%;
             text-align: center;
@@ -61,19 +55,21 @@ import {GetSizePipe} from '../Pipes/GetSize.pipe';
             display: block;
         }
 
-        
+
         button {
             margin: 0;
         }   
     `],
     template: `
-        <div *ngIf="file" class="file-container" [class.uploaded]="uploaded">
+        <div *ngIf="file" class="file-container" [ngClass]="uploadingClass()">
             <div class="flex-block file-preview" [ngStyle]="{'background-image': 'url(' + previewSrc + ')', 'height': previewHeight + 'px'}">
                 <div *ngIf="ext" class="flex-block file-preview-ext ">{{ext}}</div>
                 <div *ngIf="!previewSrc" class="flex-block file-name">{{fileName}}</div>
                 <progress [value]="percentage" max="100" class="file-progress"></progress>
+                <div *ngIf="uploadingClass()==='uploaded'" [ngStyle]="{cursor:'pointer'}" (click)="removeFileFromServer()">Remove</div>
+                <div (click)="removeFileFromServer()" *ngIf="uploadingClass()==='failed'" [ngStyle]="{cursor:'pointer'}">Retry</div>
             </div>
-            <div class=" file-remove" (click)="removeFileListener()"><button>Remove</button></div>
+            <div class="file-remove" (click)="removeFileListener()"><button>Remove</button></div>
             <div class="flex-block">{{file.size | getSize }}</div>
         </div>
     `
@@ -94,11 +90,26 @@ export class File {
 
     @Input() file;
     @Input() index;
+    @Input() loading;
     @Input() percentage;
     @Input() uploaded;
 
     @Output() removeFile = new EventEmitter();
+    @Output() onRemoveFileFromServer = new EventEmitter();
 
+    public uploadingClass(){
+        if(this.loading === false && this.uploaded===true){
+            return "uploaded";
+        } else if(this.loading === false && this.uploaded===false){
+            return "failed";
+        } else {
+            return "";
+        }
+    }
+
+    public removeFileFromServer(){
+        this.onRemoveFileFromServer && this.onRemoveFileFromServer.emit(true);
+    }
 
     removeFileListener() {
         this.removeFile && this.removeFile.emit(true);
