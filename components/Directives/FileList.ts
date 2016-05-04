@@ -18,7 +18,7 @@ import {iFile} from "../Services/FileWrapper.service";
     `],
     template: `
     <div class="file-list">
-        <fileItem *ngFor="#file of files; #i = index" 
+        <fileItem *ngFor="let file of files; let i = index"
             [file]="file.File" 
             [index]="i" 
             [percentage]="file.percentage"
