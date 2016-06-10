@@ -1,4 +1,4 @@
-import {EventEmitter} from "angular2/core";
+import {EventEmitter} from "@angular/core";
 import {FileUpload} from "./FileUpload.service";
 
 export interface iFile {
@@ -7,7 +7,7 @@ export interface iFile {
     loading:boolean,
     percentage:number,
     id:string,
-    loadingSuccessful:any,
+    loadingSuccessful:boolean,
     fileUploaded:any,
     uploader:FileUpload
 }
@@ -18,7 +18,7 @@ export class FileWrapper {
     public percentage = 0;
     public removing = false;
     public id = Math.random().toString(36).substr(2);
-    public loadingSuccessful = null;
+    public loadingSuccessful = false;
     public fileUploaded = new EventEmitter(false);
     public uploader = null;
 
