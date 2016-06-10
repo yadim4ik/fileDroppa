@@ -1,4 +1,4 @@
-import {Component, Input, EventEmitter, Output} from 'angular2/core';
+import {Component, Input, EventEmitter, Output} from '@angular/core';
 import {FileDroppa} from './FileDroppa';
 import {FileList} from './FileList';
 import {FilesStore} from "../Services/FileStore.service";
@@ -39,11 +39,8 @@ import {File} from "./File";
                 <button (click)="upload($event)">Upload All Files</button>
                 <button (click)="remove($event)">Remove All Files</button>
             </div>
-
-
     `
 })
-
 export class FileDropZone {
     private _config = {
         uploadUrl:null,
@@ -51,8 +48,7 @@ export class FileDropZone {
         requestHeaders:{},
         customClass: 'file_droppa_internal',
         beforeUpload:null,
-        validateFile: null,
-        removeWhenUploaded:true
+        validateFile: null
     };
     public uploadFiles = new EventEmitter();
     public removeAllFiles = new EventEmitter();
@@ -68,7 +64,7 @@ export class FileDropZone {
     };
 
     @Input() set config(config) {
-        this._config = config ? Object.assign({}, this._config, config) : this._config;
+        this._config = config ? Object.assign(this._config, config) : this._config;
         this.filesStore.uploadConfig = this._config;
     }
 

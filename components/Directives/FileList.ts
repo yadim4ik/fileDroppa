@@ -1,4 +1,4 @@
-import {Component, Input, EventEmitter, Output, ChangeDetectionStrategy} from 'angular2/core';
+import {Component, Input, EventEmitter, Output, ChangeDetectionStrategy} from '@angular/core';
 import {File} from './File';
 import {FilesStore} from "../Services/FileStore.service";
 import {FileUpload} from "../Services/FileUpload.service";
@@ -23,8 +23,6 @@ import {iFile} from "../Services/FileWrapper.service";
             [index]="i" 
             [percentage]="file.percentage"
             [uploaded]="file.loadingSuccessful"
-            [loading]="file.loading"
-            (onRemoveFileFromServer)="onRemoveFileFromServer(file, i)"
             (removeFile)="removeFile(file, i)">
         </fileItem>
     </div>
@@ -66,10 +64,6 @@ export class FileList {
         });
         this.filesStore.clearStore();
         this.notifyFilesUpdated.emit(this.filesStore.files);
-    }
-
-    onRemoveFileFromServer(iFile:iFile, i){
-        iFile.uploader.removeFileFromServer();
     }
 
     removeFile(iFile:iFile, i) {

@@ -1,4 +1,4 @@
-import {Injectable, EventEmitter} from "angular2/core";
+import {Injectable, EventEmitter} from "@angular/core";
 import {FileUpload} from "./FileUpload.service";
 import {iFile} from "./FileWrapper.service";
 import {FileWrapper} from "./FileWrapper.service";
@@ -50,9 +50,7 @@ export class FilesStore {
     }
 
     public notifyFileUploaded(success, response, iFile){
-        if(this.uploadConfig.removeWhenUploaded && success){
-            this.removeFiles(iFile);
-        }
+        success && this.removeFiles(iFile);
         this.fileUploaded.emit([success, response, iFile.File]);
     }
 
