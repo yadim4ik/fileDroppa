@@ -6,18 +6,14 @@ import {FileWrapper} from "./FileWrapper.service";
 @Injectable()
 export class FilesStore {
     public fileUploaded = new EventEmitter(true);
-    public uploadConfig;
+    public filesUpdated = new EventEmitter(true);
 
     private WSfiles:WeakSet<File> = new WeakSet();
     private _iFiles:Array<iFile> = [];
 
-    private isFileValid(file:File){
-        if(!this.uploadConfig.validateFile ||
-            (typeof this.uploadConfig.validateFile==="function" && this.uploadConfig.validateFile(file))){
-            return true;
-        }
-        return false;
-    }
+    //TODO:REMOVE ONCE TESTED!!!!!XXXX!!!!!!!!!!!!!!!!XYUUUU
+    public isFileValid
+
     public get files():Array<File> {
         return this.iFiles.reduce((res, iFile:iFile)=> {
             res.push(iFile.File);
@@ -40,13 +36,14 @@ export class FilesStore {
                 return true;
             }
         }).map((file)=> {
-            let iFile = new FileWrapper(file,  this.uploadConfig);
+            let iFile = new FileWrapper(file);
             iFile.fileUploaded.subscribe(([success, response, iFile])=>{
                 this.notifyFileUploaded(success, response, iFile);
             });
             return iFile;
         });
         this.iFiles = [...this.iFiles, ...files];
+        this.filesUpdated.emit(true);
     }
 
     public notifyFileUploaded(success, response, iFile){
@@ -59,6 +56,7 @@ export class FilesStore {
         this.iFiles = this.iFiles.filter((item)=>{
             return item.id !== iFile.id;
         });
+        this.filesUpdated.emit(true);
     }
 
     public clearStore():void {
@@ -66,5 +64,6 @@ export class FilesStore {
             this.WSfiles.delete(iFile.File);
         });
         this.iFiles = [];
+        this.filesUpdated.emit(true);
     }
 }

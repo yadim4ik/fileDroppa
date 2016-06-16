@@ -1,3 +1,2 @@
-export * from "./components/Directives/FileDropZone";
-export * from "./components/Directives/FileDroppa";
-export * from "./components/Directives/FileList";
+import FileDroppa from "./components/Directives/FileDroppa";
+export default FileDroppa;

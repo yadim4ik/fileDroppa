@@ -17,28 +17,26 @@ import {iFile} from "../Services/FileWrapper.service";
          }
     `],
     template: `
-    <div class="file-list">
-        <fileItem *ngFor="let file of files; let i = index"
-            [file]="file.File" 
-            [index]="i" 
-            [percentage]="file.percentage"
-            [uploaded]="file.loadingSuccessful"
-            (removeFile)="removeFile(file, i)">
-        </fileItem>
-    </div>
+        <div class="file-list">
+            <fileItem *ngFor="let iFile of iFiles"
+                [file]="iFile.File"
+                [percentage]="iFile.percentage"
+                [uploaded]="iFile.loadingSuccessful"
+                (removeFile)="removeFile(iFile)">
+            </fileItem>
+        </div>
     `
 })
 
 export class FileList {
-    public filesStore: FilesStore;
-
-    @Input() set fs(fs:FilesStore) {
-        this.filesStore = fs;
+    private iFiles = [];
+    constructor(private filesStore:FilesStore){
+        this.iFiles = filesStore.iFiles;
     }
 
     @Input() set uploadFiles(uploadFilesEmitter) {
         uploadFilesEmitter.subscribe(()=> {
-            this.files.forEach((iFile:iFile, i:number)=> {
+            this.iFiles.forEach((iFile:iFile, i:number)=> {
                 iFile.uploader.uploadFile().then(()=>{
                     this.notifyFilesUpdated.emit(this.filesStore.files);
                 });
@@ -54,10 +52,6 @@ export class FileList {
 
     @Output() notifyFilesUpdated = new EventEmitter();
 
-    public get files():Array<iFile> {
-        return this.filesStore.iFiles;
-    }
-
     onRemoveAllFiles() {
         this.filesStore.iFiles.forEach((iFile)=> {
             iFile.uploader.abortUploading();
@@ -66,7 +60,7 @@ export class FileList {
         this.notifyFilesUpdated.emit(this.filesStore.files);
     }
 
-    removeFile(iFile:iFile, i) {
+    removeFile(iFile:iFile) {
         iFile.uploader.abortUploading();
         this.filesStore.removeFiles(iFile);
         this.notifyFilesUpdated.emit(this.filesStore.files);

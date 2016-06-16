@@ -4,9 +4,13 @@ import {Injectable, EventEmitter, Output, Input, NgZone} from "@angular/core";
 export class FileUpload {
     private zone = new NgZone({enableLongStackTrace: false});
     private xhr;
+    public autoUpload = true;
+    public requestHeaders = null;
+    public url = "http://";
+    public beforeUpload = null;
 
-    constructor(public iFile, public autoUpload, public requestHeaders, public url, public beforeUpload) {
-        autoUpload && this.uploadFile();
+    constructor(public iFile) {
+        this.autoUpload && this.uploadFile();
     }
 
     abortUploading() {

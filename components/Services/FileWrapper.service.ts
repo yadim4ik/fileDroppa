@@ -22,10 +22,8 @@ export class FileWrapper {
     public fileUploaded = new EventEmitter(false);
     public uploader = null;
 
-    constructor(file, uploadConfig){
+    constructor(file){
         this.File = file;
-        this.uploader = new FileUpload(this,
-            uploadConfig.autoUpload, uploadConfig.requestHeaders,
-            uploadConfig.uploadUrl, uploadConfig.beforeUpload);
+        this.uploader = new FileUpload(this);
     }
 }
