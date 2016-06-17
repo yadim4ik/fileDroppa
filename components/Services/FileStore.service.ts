@@ -5,14 +5,12 @@ import {FileWrapper} from "./FileWrapper.service";
 
 @Injectable()
 export class FilesStore {
-    public fileUploaded = new EventEmitter(true);
     public filesUpdated = new EventEmitter(true);
+
+    public beforeAddFile:any = null;
 
     private WSfiles:WeakSet<File> = new WeakSet();
     private _iFiles:Array<iFile> = [];
-
-    //TODO:REMOVE ONCE TESTED!!!!!XXXX!!!!!!!!!!!!!!!!XYUUUU
-    public isFileValid
 
     public get files():Array<File> {
         return this.iFiles.reduce((res, iFile:iFile)=> {
@@ -31,24 +29,20 @@ export class FilesStore {
 
     public addFiles(files):void {
         files = files.filter((file)=> {
-            if (!this.WSfiles.has(file) && this.isFileValid(file)) {
-                this.WSfiles.add(file);
-                return true;
+            if (!this.WSfiles.has(file)) {
+                if(typeof this.beforeAddFile === "function" && this.beforeAddFile(file)){
+                    this.WSfiles.add(file);
+                    return true;
+                } else if(typeof this.beforeAddFile !== "function") {
+                    return true;
+                }
+                return false;
             }
         }).map((file)=> {
-            let iFile = new FileWrapper(file);
-            iFile.fileUploaded.subscribe(([success, response, iFile])=>{
-                this.notifyFileUploaded(success, response, iFile);
-            });
-            return iFile;
+            return new FileWrapper(file);
         });
         this.iFiles = [...this.iFiles, ...files];
         this.filesUpdated.emit(true);
-    }
-
-    public notifyFileUploaded(success, response, iFile){
-        success && this.removeFiles(iFile);
-        this.fileUploaded.emit([success, response, iFile.File]);
     }
 
     public removeFiles(iFile:iFile):void {

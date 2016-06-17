@@ -3,30 +3,116 @@ import {FileDropZone} from './FileDropZone';
 import {FileList} from './FileList';
 import {FilesStore} from "../Services/FileStore.service";
 import {File} from "./File";
+import {FileUpload} from "../Services/FileUpload.service";
 
 @Component({
     selector: 'fileDroppa',
     directives: [FileDropZone, FileList],
-    providers:[FilesStore],
+    providers:[FilesStore, FileUpload],
+    styles:[`
+        .file-droppa-container {
+            width: 400px;
+        }
+        .btns {
+            text-align: center;
+        }
+        .btn {
+              margin: 15px;
+              padding: 0;
 
+              overflow: hidden;
+
+              border-width: 0;
+              outline: none;
+              border-radius: 2px;
+              box-shadow: 0 1px 4px rgba(0, 0, 0, .6);
+
+              background-color: #2ecc71;
+              color: #ecf0f1;
+
+              transition: background-color .3s;
+        }
+
+        .btn:hover{
+          background-color: #27ae60;
+        }
+
+        .btn span {
+          display: block;
+          padding: 12px 24px;
+        }
+
+        .btn.orange {
+          background-color: #e67e22;
+        }
+
+        .btn.orange:hover {
+          background-color: #d35400;
+        }
+
+        .btn.red {
+          background-color: #e74c3c;
+        }
+
+        .btn.red:hover{
+          background-color: #c0392b;
+        }
+        `
+    ],
     template: `
+        <div class="file-droppa-container">
             <fileDropZone></fileDropZone>
             <br/>
-            <fileList></fileList>
-            <div *ngIf="showButtons">
-                <button (click)="upload($event)">Upload All Files</button>
-                <button (click)="remove($event)">Remove All Files</button>
+            <fileList *ngIf="showFilesList"></fileList>
+            <div class="btns" *ngIf="filesStore.iFiles.length">
+                <button class="btn orange" (click)="uploadAllFiles($event)"><span>Upload All Files</span></button>
+                <button class="btn red" (click)="removeAllFiles($event)"><span>Remove All Files</span></button>
             </div>
+        </div>
     `
 })
 export default class FileDroppa {
-    constructor(private filesStore:FilesStore){
+    @Input() showFilesList:boolean = true;
+    @Input() autoUpload:boolean = false;
+    @Input() beforeRequest:Function = null;
+    @Input() url:string = null;
+    @Input() beforeFileUpload:Function = null;
+    @Input() beforeAddFile:Function = null;
+    @Output() filesUpdated = new EventEmitter(true);
+    @Output() fileUploaded = new EventEmitter(true);
+
+    constructor(private filesStore:FilesStore, private fileUploadService: FileUpload){
         filesStore.filesUpdated.subscribe(()=>{
-            console.log(`files store udpated ${filesStore.iFiles}`)
+            this.filesUpdated.emit(filesStore.files);
         });
-        filesStore.fileUploaded.subscribe(([success, response, file])=>{
-            console.log(`file uploaded ${success} ${file}`)
+        fileUploadService.fileUploadedEvent.subscribe(([success, response, iFile])=>{
+            if(success){
+                this.filesStore.removeFiles(iFile);
+            } else {
+                iFile.loadingSuccessful = false;
+                iFile.responseText = false;
+            }
+            this.fileUploaded.emit([success, response, iFile.file]);
         });
+    }
+
+    /**
+     * We got to pass Input parameters to Service instances
+     */
+    ngOnInit(){
+        this.filesStore.beforeAddFile = (typeof this.beforeAddFile==="function") ? this.beforeAddFile : (file) => true;
+        this.fileUploadService.autoUpload = this.autoUpload;
+        this.fileUploadService.beforeRequest = this.beforeRequest;
+        this.fileUploadService.beforeFileUpload = (typeof this.beforeFileUpload==="function") ? this.beforeFileUpload : (formData) => true;
+        this.fileUploadService.url = this.url;
+    }
+
+    removeAllFiles() {
+        this.filesStore.clearStore();
+    }
+
+    uploadAllFiles() {
+        this.fileUploadService.uploadFiles(this.filesStore.iFiles);
     }
 }
 

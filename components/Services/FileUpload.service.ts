@@ -3,79 +3,76 @@ import {Injectable, EventEmitter, Output, Input, NgZone} from "@angular/core";
 @Injectable()
 export class FileUpload {
     private zone = new NgZone({enableLongStackTrace: false});
-    private xhr;
     public autoUpload = true;
-    public requestHeaders = null;
-    public url = "http://";
-    public beforeUpload = null;
+    public url = null;
+    public beforeRequest = null;
+    public beforeFileUpload = null;
+    public fileUploadedEvent = new EventEmitter(true);
 
-    constructor(public iFile) {
-        this.autoUpload && this.uploadFile();
+    uploadFiles(iFiles){
+        return Promise.all(iFiles.reduce((res, iFile) => {
+            return res.push(this.uploadFile(iFile)), res;
+        }, []))
     }
 
-    abortUploading() {
-        (this.xhr && this.xhr.loading) && this.xhr.abort();
-    }
-
-    uploadFile() {
+    uploadFile(iFile) {
         if (!this.url) {
             throw "url to upload needs to be provided";
         }
-        if (this.iFile.loading) {
+        if (iFile.loading) {
             throw "Already under loading";
         }
         let that = this,
             formData = new FormData();
 
-        this.xhr = new XMLHttpRequest();
 
-        this.xhr.upload.onprogress = (event) => {
+        const xhr = new XMLHttpRequest();
+
+        xhr.upload.onprogress = (event) => {
             let progress = (event.loaded * 100) / event.total | 0;
             this.zone.run(()=> {
-                this.iFile.percentage = progress;
+                iFile.percentage = progress;
             })
         };
 
-        let pr = new Promise((resolve, reject)=> {
-            this.xhr.onload = this.xhr.onerror = function (e) {
+        const pr = new Promise((resolve, reject)=> {
+            xhr.onload = xhr.onerror = function (e) {
                 that.zone.run(()=> {
                     if (this["status"] == 200) {
-                        that.iFile.loading = false;
-                        that.iFile.loadingSuccessful = true;
-                        that.iFile.fileUploaded.emit([true, that.xhr.response, that.iFile]);
-                        resolve();
+                        iFile.loading = false;
+                        iFile.loadingSuccessful = true;
+                        resolve(true);
                     } else {
-                        that.iFile.loading = false;
-                        that.iFile.loadingSuccessful = false;
-                        that.iFile.fileUploaded.emit([false, that.xhr.response, that.iFile]);
-                        reject();
+                        iFile.loading = false;
+                        iFile.loadingSuccessful = false;
+                        reject(false);
                     }
                 })
             };
+        }).then((success)=>{
+            this.fileUploadedEvent.emit([success, xhr.response, iFile]);
         });
 
-        this.iFile.loading = true;
+        iFile.loading = true;
 
-        this.xhr.open("POST", this.url, true);
-        if(this.requestHeaders && typeof this.requestHeaders === 'object'){
-            Object.keys(this.requestHeaders).forEach((key)=>{
-                this.xhr.setRequestHeader(key, this.requestHeaders[key]);
-            })
-        }
+        xhr.open("POST", this.url, true);
 
-        if(typeof this.beforeUpload === "function"){
-            Promise.resolve(this.beforeUpload(this.iFile.File)).then((res)=>{
-                let [name, value, fileName] = res;
-                formData.append(name, value, fileName);
-                this.xhr.send(formData);
+        //Hook before request to provide user ability to add headers or something else in XHR
+        typeof this.beforeRequest === "function" && this.beforeRequest(xhr);
+
+        formData.append(`${iFile.File.name}`, iFile.File);
+
+        if(typeof this.beforeFileUpload === "function"){
+            Promise.resolve(this.beforeFileUpload(formData)).then((formData)=> {
+                formData && xhr.send(formData);
+                formData || console.warn(`beforeFileUpload didn't return formData for ${iFile.File.name} and upload was aborted`);
             });
-
         } else {
-            formData.append(`${this.iFile.File.name}`, this.iFile.File);
-            this.xhr.send(formData);
+            xhr.send(formData);
         }
 
         return pr;
-
     }
+
+
 }     
