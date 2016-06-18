@@ -1,114 +1,126 @@
-import {Directive, ElementRef, Renderer, Input, EventEmitter, Output} from '@angular/core';
-import {FileParser} from "../Services/FileParser.service";
+import {Component, Input, EventEmitter, Output} from '@angular/core';
+import {FileDropZone} from './FileDropZone';
+import {FileList} from './FileList';
 import {FilesStore} from "../Services/FileStore.service";
+import {File} from "./File";
+import {FileUpload} from "../Services/FileUpload.service";
 
-@Directive({
-    selector: 'fileDroppa, [fileDroppa]',
-    providers: [FileParser],
-    host: {
-        '(drop)': 'drop($event)',
-        '(dragenter)': 'dragenter($event)',
-        '(dragover)': 'dragover($event)',
-        '(dragleave)': 'dragleave($event)',
-        '(click)': 'onClick($event)'
-    }
-})
-export class FileDroppa {
-    private _overCls:string = "defaultOver";
-    private hiddenFileInput = null;
-    private filesStore: FilesStore = new FilesStore();
-
-    constructor(private el:ElementRef, private renderer:Renderer, private fileParser:FileParser) {
-        this.createHiddenInput();
-    }
-
-    /*
-     * Directive Input and Output Params
-     * */
-
-    @Input() set fs(fs:FilesStore) {
-        this.filesStore = fs;
-    }
-
-    @Input() set overCls(overCls:string) {
-        this._overCls = overCls || this._overCls;
-    }
-
-    @Output() notifyFilesUpdated = new EventEmitter();
-
-    /*
-     * Host Event Listeners
-     * */
-
-    onClick(e) {
-        this.hiddenFileInput && this.hiddenFileInput.click();
-    }
-
-    drop(e) {
-        e.preventDefault();
-        if (!e.dataTransfer || !e.dataTransfer.files.length) {
-            return;
+@Component({
+    selector: 'fileDroppa',
+    directives: [FileDropZone, FileList],
+    providers:[FilesStore, FileUpload],
+    styles:[`
+        .file-droppa-container {
+            width: 400px;
         }
-        this.fileParser.processInputFromDrop(e)
-            .then((files)=> {
-                this.updateFilesStore([...files]);
-            });
-        this.updateStyles();
-    }
+        .btns {
+            text-align: center;
+        }
+        .btn {
+              margin: 15px;
+              padding: 0;
 
-    dragenter(e) {
-        e.preventDefault()
-    }
+              overflow: hidden;
 
-    dragover(e) {
-        e.preventDefault();
-        this.updateStyles(true);
-    }
+              border-width: 0;
+              outline: none;
+              border-radius: 2px;
+              box-shadow: 0 1px 4px rgba(0, 0, 0, .6);
 
-    dragleave(e) {
-        e.preventDefault();
-        this.updateStyles();
-    }
+              background-color: #2ecc71;
+              color: #ecf0f1;
 
-    /*
-     * Public methods
-     * */
+              transition: background-color .3s;
+        }
 
-    OnDestroy() {
-        this.hiddenFileInput && document.body.removeChild(this.hiddenFileInput);
-        this.hiddenFileInput = null;
-    }
+        .btn:hover{
+          background-color: #27ae60;
+        }
 
-    updateStyles(dragOver:boolean = false) {
-        this.el.nativeElement.classList[(dragOver) ? 'add' : 'remove'](this._overCls);
-    }
+        .btn span {
+          display: block;
+          padding: 12px 24px;
+        }
 
-    updateFilesStore(files:Array<File>):void {
-        this.filesStore.addFiles(files);
-        this.notifyFilesUpdated.emit(this.filesStore.files);
-    }
+        .btn.orange {
+          background-color: #e67e22;
+        }
 
-    createHiddenInput() {
-        this.hiddenFileInput && document.body.removeChild(this.hiddenFileInput);
-        this.hiddenFileInput = document.createElement("input");
-        this.hiddenFileInput.setAttribute("type", "file");
-        this.hiddenFileInput.setAttribute("multiple", "multiple");
-        this.hiddenFileInput.style.visibility = "hidden";
-        this.hiddenFileInput.style.position = "absolute";
-        this.hiddenFileInput.style.top = "0";
-        this.hiddenFileInput.style.left = "0";
-        this.hiddenFileInput.style.height = "0";
-        this.hiddenFileInput.style.width = "0";
-        this.hiddenFileInput.className = "_hiddenInputClassName";
-        document.body.appendChild(this.hiddenFileInput);
-        this.hiddenFileInput.addEventListener("change", (e)=> {
-            let files = [];
-            for(let i = 0, l = e.target.files.length;i<l;i++){
-                files.push(e.target.files[i]);
+        .btn.orange:hover {
+          background-color: #d35400;
+        }
+
+        .btn.red {
+          background-color: #e74c3c;
+        }
+
+        .btn.red:hover{
+          background-color: #c0392b;
+        }
+        `
+    ],
+    template: `
+        <div class="file-droppa-container">
+            <fileDropZone>
+                <div [innerHTML]="dropZoneTemplate"></div>
+            </fileDropZone>
+            <br/>
+            <ng-content></ng-content>
+            <fileList *ngIf="showFilesList"></fileList>
+            <div class="btns" *ngIf="filesStore.iFiles.length">
+                <button class="btn orange" (click)="uploadAllFiles($event)"><span>Upload All Files</span></button>
+                <button class="btn red" (click)="removeAllFiles($event)"><span>Remove All Files</span></button>
+            </div>
+        </div>
+    `
+})
+export default class FileDroppa {
+    @Input() showFilesList:boolean = true;
+    @Input() autoUpload:boolean = false;
+    @Input() beforeRequest:Function = null;
+    @Input() url:string = null;
+    @Input() beforeFileUpload:Function = null;
+    @Input() beforeAddFile:Function = null;
+    @Input() dropZoneTemplate:string = `
+                <div class="file_dropZone_internal">
+                    Drop Files Here
+                </div>
+    `;
+    @Output() filesUpdated = new EventEmitter(true);
+    @Output() fileUploaded = new EventEmitter(true);
+
+    constructor(private filesStore:FilesStore, private fileUploadService: FileUpload){
+        filesStore.filesUpdated.subscribe(()=>{
+            this.filesUpdated.emit(filesStore.files);
+        });
+        fileUploadService.fileUploadedEvent.subscribe(([success, response, iFile])=>{
+            if(success){
+                this.filesStore.removeFiles(iFile);
+            } else {
+                iFile.loadingSuccessful = false;
+                iFile.responseText = false;
             }
-            this.hiddenFileInput.value = "";
-            this.updateFilesStore(files);
+            this.fileUploaded.emit([success, response, iFile.file]);
         });
     }
 
+    /**
+     * We got to pass Input parameters to Service instances
+     */
+    ngOnInit(){
+        this.filesStore.beforeAddFile = (typeof this.beforeAddFile==="function") ? this.beforeAddFile : (file) => true;
+        this.fileUploadService.autoUpload = this.autoUpload;
+        this.fileUploadService.beforeRequest = this.beforeRequest;
+        this.fileUploadService.beforeFileUpload = (typeof this.beforeFileUpload==="function") ? this.beforeFileUpload : (formData) => true;
+        this.fileUploadService.url = this.url;
+    }
+
+    removeAllFiles() {
+        this.filesStore.clearStore();
+    }
+
+    uploadAllFiles() {
+        this.fileUploadService.uploadFiles(this.filesStore.iFiles);
+    }
 }
+

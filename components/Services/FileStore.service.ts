@@ -5,19 +5,13 @@ import {FileWrapper} from "./FileWrapper.service";
 
 @Injectable()
 export class FilesStore {
-    public fileUploaded = new EventEmitter(true);
-    public uploadConfig;
+    public filesUpdated = new EventEmitter(true);
+
+    public beforeAddFile:any = null;
 
     private WSfiles:WeakSet<File> = new WeakSet();
     private _iFiles:Array<iFile> = [];
 
-    private isFileValid(file:File){
-        if(!this.uploadConfig.validateFile ||
-            (typeof this.uploadConfig.validateFile==="function" && this.uploadConfig.validateFile(file))){
-            return true;
-        }
-        return false;
-    }
     public get files():Array<File> {
         return this.iFiles.reduce((res, iFile:iFile)=> {
             res.push(iFile.File);
@@ -35,23 +29,20 @@ export class FilesStore {
 
     public addFiles(files):void {
         files = files.filter((file)=> {
-            if (!this.WSfiles.has(file) && this.isFileValid(file)) {
-                this.WSfiles.add(file);
-                return true;
+            if (!this.WSfiles.has(file)) {
+                if(typeof this.beforeAddFile === "function" && this.beforeAddFile(file)){
+                    this.WSfiles.add(file);
+                    return true;
+                } else if(typeof this.beforeAddFile !== "function") {
+                    return true;
+                }
+                return false;
             }
         }).map((file)=> {
-            let iFile = new FileWrapper(file,  this.uploadConfig);
-            iFile.fileUploaded.subscribe(([success, response, iFile])=>{
-                this.notifyFileUploaded(success, response, iFile);
-            });
-            return iFile;
+            return new FileWrapper(file);
         });
         this.iFiles = [...this.iFiles, ...files];
-    }
-
-    public notifyFileUploaded(success, response, iFile){
-        success && this.removeFiles(iFile);
-        this.fileUploaded.emit([success, response, iFile.File]);
+        this.filesUpdated.emit(true);
     }
 
     public removeFiles(iFile:iFile):void {
@@ -59,6 +50,7 @@ export class FilesStore {
         this.iFiles = this.iFiles.filter((item)=>{
             return item.id !== iFile.id;
         });
+        this.filesUpdated.emit(true);
     }
 
     public clearStore():void {
@@ -66,5 +58,6 @@ export class FilesStore {
             this.WSfiles.delete(iFile.File);
         });
         this.iFiles = [];
+        this.filesUpdated.emit(true);
     }
 }

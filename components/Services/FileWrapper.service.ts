@@ -9,6 +9,7 @@ export interface iFile {
     id:string,
     loadingSuccessful:boolean,
     fileUploaded:any,
+    responseMessage:string,
     uploader:FileUpload
 }
 
@@ -17,15 +18,12 @@ export class FileWrapper {
     public loading = false;
     public percentage = 0;
     public removing = false;
+    public responseMessage = "Error happened during upload";
     public id = Math.random().toString(36).substr(2);
-    public loadingSuccessful = false;
-    public fileUploaded = new EventEmitter(false);
+    public loadingSuccessful = true;
     public uploader = null;
 
-    constructor(file, uploadConfig){
+    constructor(file){
         this.File = file;
-        this.uploader = new FileUpload(this,
-            uploadConfig.autoUpload, uploadConfig.requestHeaders,
-            uploadConfig.uploadUrl, uploadConfig.beforeUpload);
     }
 }

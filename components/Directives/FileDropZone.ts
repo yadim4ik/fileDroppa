@@ -1,14 +1,12 @@
-import {Component, Input, EventEmitter, Output} from '@angular/core';
-import {FileDroppa} from './FileDroppa';
-import {FileList} from './FileList';
+import {Component, ElementRef, Input, EventEmitter, Output, ViewEncapsulation} from '@angular/core';
+import {FileParser} from "../Services/FileParser.service";
 import {FilesStore} from "../Services/FileStore.service";
-import {File} from "./File";
 
 @Component({
-    selector: 'fileDropZone',
-    directives: [FileDroppa, FileList],
+    selector: 'fileDropZone, [fileDropZone]',
+    providers: [FileParser],
     styles: [`
-        .file_droppa_internal {
+        .file_dropZone_internal {
             border: 3px dashed #DDD;
             border-radius:10px;
             padding:10px;
@@ -22,82 +20,96 @@ import {File} from "./File";
         }
     `],
     template: `
-            <div fileDroppa [class]="config.customClass"
-                (notifyFilesUpdated)="notifyFilesUpdated($event)"
-                [fs]="filesStore"
-                [overCls]="config.overCls">
-                Drop files here or click to select
-            </div>
-            <br/>
-            <fileList
-                (notifyFilesUpdated)="notifyFilesUpdated($event)"
-                [uploadFiles]="uploadFiles"
-                [fs]="filesStore"
-                [removeAllFiles]="removeAllFiles">
-            </fileList>
-            <div *ngIf="showButtons">
-                <button (click)="upload($event)">Upload All Files</button>
-                <button (click)="remove($event)">Remove All Files</button>
-            </div>
-    `
+        <ng-content></ng-content>
+    `,
+    host: {
+        '(drop)': 'drop($event)',
+        '(dragenter)': 'dragenter($event)',
+        '(dragover)': 'dragover($event)',
+        '(dragleave)': 'dragleave($event)',
+        '(click)': 'onClick($event)'
+    },
+    encapsulation: ViewEncapsulation.None
 })
 export class FileDropZone {
-    private _config = {
-        uploadUrl:null,
-        autoUpload:false,
-        requestHeaders:{},
-        customClass: 'file_droppa_internal',
-        beforeUpload:null,
-        validateFile: null
-    };
-    public uploadFiles = new EventEmitter();
-    public removeAllFiles = new EventEmitter();
-    public _showButtons:Boolean = false;
+    private hiddenFileInput = null;
 
-    public filesStore:FilesStore = null;
-
-    constructor() {
-        this.filesStore = new FilesStore();
-        this.filesStore.fileUploaded.subscribe(([success, response, file])=>{
-            this.notifyFileUploaded(success, response, file)
-        })
-    };
-
-    @Input() set config(config) {
-        this._config = config ? Object.assign(this._config, config) : this._config;
-        this.filesStore.uploadConfig = this._config;
+    constructor(private filesStore: FilesStore, private el:ElementRef, private fileParser:FileParser) {
+        this.createHiddenInput();
     }
 
-    @Output() filesUpdated:EventEmitter<Array<File>> = new EventEmitter();
-    @Output() fileUploaded:EventEmitter<any> = new EventEmitter();
+    /*
+     * Host Event Listeners
+     * */
 
-    set showButtons(flag:boolean) {
-        this._showButtons = flag;
+    onClick(e) {
+        this.hiddenFileInput && this.hiddenFileInput.click();
     }
 
-    get showButtons() {
-        return this._showButtons && !this._config["autoUpload"];
+    drop(e) {
+        e.preventDefault();
+        if (!e.dataTransfer || !e.dataTransfer.files.length) {
+            return;
+        }
+        this.fileParser.processInputFromDrop(e)
+            .then((files)=> {
+                this.updateFilesStore([...files]);
+            });
+        this.updateStyles();
     }
 
-    get config() {
-        return this._config;
+    dragenter(e) {
+        e.preventDefault()
     }
 
-    upload() {
-        this.uploadFiles.emit(true);
+    dragover(e) {
+        e.preventDefault();
+        this.updateStyles(true);
     }
 
-    remove() {
-        this.removeAllFiles.emit(true);
+    dragleave(e) {
+        e.preventDefault();
+        this.updateStyles();
     }
 
-    notifyFilesUpdated(files:Array<File>) {
-        this.filesUpdated.emit(files);
-        this.showButtons = !!files.length;
+    /*
+     * Public methods
+     * */
+
+    OnDestroy() {
+        this.hiddenFileInput && document.body.removeChild(this.hiddenFileInput);
+        this.hiddenFileInput = null;
     }
 
-    notifyFileUploaded(success, response, file){
-        this.fileUploaded.emit([success, response, file]);
+    updateStyles(dragOver:boolean = false) {
+        //this.el.nativeElement.classList[(dragOver) ? 'add' : 'remove'](this._overCls);
     }
+
+    updateFilesStore(files:Array<File>):void {
+        this.filesStore.addFiles(files);
+    }
+
+    createHiddenInput() {
+        this.hiddenFileInput && document.body.removeChild(this.hiddenFileInput);
+        this.hiddenFileInput = document.createElement("input");
+        this.hiddenFileInput.setAttribute("type", "file");
+        this.hiddenFileInput.setAttribute("multiple", "multiple");
+        this.hiddenFileInput.style.visibility = "hidden";
+        this.hiddenFileInput.style.position = "absolute";
+        this.hiddenFileInput.style.top = "0";
+        this.hiddenFileInput.style.left = "0";
+        this.hiddenFileInput.style.height = "0";
+        this.hiddenFileInput.style.width = "0";
+        this.hiddenFileInput.className = "_hiddenInputClassName";
+        document.body.appendChild(this.hiddenFileInput);
+        this.hiddenFileInput.addEventListener("change", (e)=> {
+            let files = [];
+            for(let i = 0, l = e.target.files.length;i<l;i++){
+                files.push(e.target.files[i]);
+            }
+            this.hiddenFileInput.value = "";
+            this.updateFilesStore(files);
+        });
+    }
+
 }
-
