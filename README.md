@@ -7,86 +7,121 @@ npm install --save file-droppa
 ```
 
 #### Demo:
-[DEMO http://ptkach.github.io/fileDroppa/](http://ptkach.github.io/fileDroppa/)
+![Screenshot](https://raw.githubusercontent.com/ptkach/fileDroppa/master/demo_fileDroppa.gif)
 
 #### Usage:
 
-**Whole functionality with droppable area, files list and styles you can apply with:**
+**Import FileDroppa and use it as a directive:**
 
 ```
-import {FileDropZone} from 'file-droppa';
+import FileDroppa from 'file-droppa'
 
 @Component({
     selector: 'my-app',
-    directives: [FileDropZone],
-    template: `<fileDropZone 
-                    [config]="fileDroppaConfig"
+    directives: [FileDroppa],
+    template: `<fileDroppa [url]="'https://salty-taiga-80701.herokuapp.com/upload'">
+                   <!--<h1>-->
+                        <!--You can pass anything you want here-->
+                        <!--You can set you own file list here-->
+                   <!--</h1>-->
+               </fileDroppa>`
+})
+export class AppComponent {}
+```
+
+#### Configuration:
+
+| Parameter        | Required   | Description  | 
+| ------------- |:-------------:| -----:|
+| [url]         | Yes           | Provides Url to make Post Request |
+| [autoUpload]      | No  | If true, files will be automatically uploaded once selected or dropped |
+| [showFilesList] |  No    | If false files list will be hidden |
+| [beforeRequest] | No    | Callback which is called before File will be posted to server. Good chance to set requestHeader or update XHR request |
+| [beforeFileUpload] | No  | Callback which is called before specific file is uploaded, called with formData object. Can be used to update formData file name for example |
+| [beforeAddFile] | No  | Callback which is called once you drop or select file and before file is added to fileDroppa file store. Can be used to validate file for example by it's type or size. |
+| [dropZoneTemplate] | No | Can be used to override drop area template |
+| (filesUpdated) | No | Callback which will be fired once any file was added or removed with state of files after update |
+| (fileUploaded) | No | Callback which will be fired once any file was uploaded. With operation success, server response and file object |
+
+#### Example:
+
+```
+@Component({
+    selector: 'my-app',
+    directives: [FileDroppa],
+    template: `<fileDroppa
+                    [url]="'https://salty-taiga-80701.herokuapp.com/upload2'"
+                    [autoUpload]="false"
+                    [showFilesList]="true"
+                    [beforeRequest]="beforeRequest"
+                    [beforeFileUpload]="beforeFileUpload"
+                    [beforeAddFile]="beforeAddFile"
                     (filesUpdated)="filesUpdated($event)"
                     (fileUploaded)="fileUploaded($event)"
-                    >
-               </fileDropZone>`
+               >
+               <!--<h1>-->
+                    <!--You can pass anything you want here-->
+                    <!--You can set you own file list here-->
+               <!--</h1>-->
+               </fileDroppa>`
 })
 export class AppComponent {
-    fileDroppaConfig;
-
-    constructor() {
-        this.fileDroppaConfig = {
-            customClass:'super-awesome-custom-cls',//**Optional**Custom cls which will be applied instead of default styles
-            overCls: "custom-dragging-over-cls",//**Optional**
-            autoUpload: false,//**Optional**
-            uploadUrl: "https://salty-taiga-80701.herokuapp.com/upload",
-            beforeUpload: this.beforeUpload,//**Optional**function will be calles before upload to update formData parameters
-            validateFile: this.validateFile,//This function will receive each dropped or selected file
-            requestHeaders:{//**Optional**Request headers will be added in request
-                'X-Content':'xxx',
-                'X-Hello':'World'
-            }
-        };
-    }
-    
-    validateFile(file){
-        //You can provide any file validation you want here. File size, type, etc...
-        return true;
-    }
-
-    //Return object which will be appended in formData or if you make any async changes here like FILE RESIZE return Promise
-    //Read - https://developer.mozilla.org/ru/docs/Web/API/FormData/append
-    beforeUpload(file){
-        return ["nameYouLike", file];
-        //OR return PROMISE
-        //return new Promise((res, rej)=>{
-        //   DO ANY ASYNC OPERATIONS 
-        //   setTimeout(()=>{
-        //       res(["nameYouLike", file]);
-        //   },1000)
-        //});
-    }
-
-    fileUploaded([success, response, file]){
+    /**
+     * You can override default dropZone area template with [dropZoneTemplate] parameter passed to fileDroppa component
+     */
+    //public dropZoneTemplate = `
+    //    <div class="awesome_override_xxx">Here I'm overriding library template</div>
+    //`;
+    /**
+     * EVENTS
+     */
+    fileUploaded(success, response, file){
         success && console.log("uploaded - awesome", response, file);
         success || console.log("not uploaded - very bad", response, file);
     }
 
     filesUpdated(files) {
-        console.log("added", files)
+        console.log("Store state updated! Current state: ", files)
     }
 
-```
+    /**
+     * CALLBACKS
+     */
 
-**If you are looking for just a droppable area and you want to apply you own styles and html markup:**
+    /**
+     * This method is called before Request happened
+     * You can modify xhr confoguration in it
+     * requestHeaders for example
+     *
+     * @param xhr
+     */
+    beforeRequest(xhr){
+        xhr.setRequestHeader("Hello","World");
+    }
 
-```
-import {FileDroppa} from 'file-droppa';
+    /**
+     * This method allows you to make validation before file is sent
+     * You can update fileName for example
+     * Or you can return null and file won't be send
+     *
+     * @param formData
+     * @returns formData or null
+     */
+    beforeFileUpload(formData){
+        return formData;
+    }
 
-@Component({
-    selector: 'fileDropZone',
-    directives: [FileDroppa],
-    template: `
-            <div fileDroppa (notifyFilesUpdated)="notifyFilesUpdated($event)">
-                Any Text or content you want
-            </div> `
-})
-
+    /**
+     * This method is called once your drop or select files
+     * You can validate and decline or accept file
+     *
+     * @param file
+     * @returns Boolean
+     */
+    beforeAddFile(file){
+        return true;
+    }
+}
 ```
 
 ### Contributors
