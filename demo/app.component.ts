@@ -7,7 +7,7 @@ import FileDroppa from '../index'
     selector: 'my-app',
     directives: [FileDroppa],
     template: `<fileDroppa
-                    [url]="'https://salty-taiga-80701.herokuapp.com/upload'"
+                    [url]="'https://salty-taiga-80701.herokuapp.com/upload2'"
                     [autoUpload]="false"
                     [showFilesList]="true"
                     [beforeRequest]="beforeRequest"
@@ -65,7 +65,7 @@ export class AppComponent {
      * @returns formData or null
      */
     beforeFileUpload(formData){
-        return null;
+        return formData;
     }
 
     /**
