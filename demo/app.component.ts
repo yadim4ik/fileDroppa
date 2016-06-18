@@ -16,9 +16,19 @@ import FileDroppa from '../index'
                     (filesUpdated)="filesUpdated($event)"
                     (fileUploaded)="fileUploaded($event)"
                >
+               <!--<h1>-->
+                    <!--You can pass anything you want here-->
+                    <!--You can set you own file list here-->
+               <!--</h1>-->
                </fileDroppa>`
 })
 export class AppComponent {
+    /**
+     * You can override default dropZone area template with [dropZoneTemplate] parameter passed to fileDroppa component
+     */
+    //public dropZoneTemplate = `
+    //    <div class="awesome_override_xxx">Here I'm overriding library template</div>
+    //`;
     /**
      * EVENTS
      */

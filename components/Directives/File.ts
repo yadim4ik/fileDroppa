@@ -154,7 +154,6 @@ span a:focus:before {
     background:transparent;
 }
 
-/* Tooltip text */
 .file-upload-error .tooltiptext {
     visibility: hidden;
     white-space:nowrap;
@@ -169,7 +168,6 @@ span a:focus:before {
     z-index: 1;
 }
 
-/* Show the tooltip text when you mouse over the tooltip container */
 .file-upload-error:hover .tooltiptext {
     visibility: visible;
 }

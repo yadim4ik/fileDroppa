@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, EventEmitter, Output} from '@angular/core';
+import {Component, ElementRef, Input, EventEmitter, Output, ViewEncapsulation} from '@angular/core';
 import {FileParser} from "../Services/FileParser.service";
 import {FilesStore} from "../Services/FileStore.service";
 
@@ -20,9 +20,7 @@ import {FilesStore} from "../Services/FileStore.service";
         }
     `],
     template: `
-        <div class="file_dropZone_internal">
-            Drop Files Here
-        </div>
+        <ng-content></ng-content>
     `,
     host: {
         '(drop)': 'drop($event)',
@@ -30,7 +28,8 @@ import {FilesStore} from "../Services/FileStore.service";
         '(dragover)': 'dragover($event)',
         '(dragleave)': 'dragleave($event)',
         '(click)': 'onClick($event)'
-    }
+    },
+    encapsulation: ViewEncapsulation.None
 })
 export class FileDropZone {
     private hiddenFileInput = null;

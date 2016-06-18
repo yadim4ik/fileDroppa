@@ -1,4 +1,4 @@
-import {Component, Input, EventEmitter, Output, Injector} from '@angular/core';
+import {Component, Input, EventEmitter, Output} from '@angular/core';
 import {FileDropZone} from './FileDropZone';
 import {FileList} from './FileList';
 import {FilesStore} from "../Services/FileStore.service";
@@ -61,8 +61,11 @@ import {FileUpload} from "../Services/FileUpload.service";
     ],
     template: `
         <div class="file-droppa-container">
-            <fileDropZone></fileDropZone>
+            <fileDropZone>
+                <div [innerHTML]="dropZoneTemplate"></div>
+            </fileDropZone>
             <br/>
+            <ng-content></ng-content>
             <fileList *ngIf="showFilesList"></fileList>
             <div class="btns" *ngIf="filesStore.iFiles.length">
                 <button class="btn orange" (click)="uploadAllFiles($event)"><span>Upload All Files</span></button>
@@ -78,6 +81,11 @@ export default class FileDroppa {
     @Input() url:string = null;
     @Input() beforeFileUpload:Function = null;
     @Input() beforeAddFile:Function = null;
+    @Input() dropZoneTemplate:string = `
+                <div class="file_dropZone_internal">
+                    Drop Files Here
+                </div>
+    `;
     @Output() filesUpdated = new EventEmitter(true);
     @Output() fileUploaded = new EventEmitter(true);
 
