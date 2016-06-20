@@ -1,54 +1,69 @@
-import {Component} from 'angular2/core';
 import {
-    it,
+    beforeEach,
+    afterEach,
+    ddescribe,
+    xdescribe,
     describe,
     expect,
+    iit,
     inject,
-    TestComponentBuilder,
-    injectAsync
-} from 'angular2/testing';
-import {FileDroppa} from "../src/Directives/FileDroppa";
-import {By} from 'angular2/platform/common_dom';
+    beforeEachProviders,
+    it,
+    xit
+} from '@angular/core/testing';
+import { ComponentFixture, TestComponentBuilder } from '@angular/compiler/testing';
+import { SpyLocation } from '@angular/common/testing';
+import { Component, ComponentResolver, ViewChild, ContentChild, provide, OnDestroy, Input } from '@angular/core';
+import { Location } from '@angular/common';
+import FileDroppa from '../components/Directives/FileDroppa';
 
-@Component({
-    selector: 'body',
-    directives: [FileDroppa],
-    template: `<div fileDroppa
-                id=child
-                (fileUploaded)="fileUploaded($event)">
-            </div>`
-})
-export class TestComponent {
-    public fileUploaded(files) {
-    }
+// Needed because ViewChild isn't resolved anymore in the new router
+// https://github.com/angular/angular/issues/4452
+class GlueService {
+    testComponent: TestComponent;
 }
 
-describe('Test File Droppa Directive', () => {
-    it('should call onDrop', injectAsync([TestComponentBuilder], (tcb) => {
-        return tcb.createAsync(TestComponent).then((fixture) => {
+
+@Component({
+    selector: 'app-component',
+    directives: [FileDroppa],
+    template: `
+        <fileDroppa></fileDroppa>
+    `
+})
+class TestComponent {
+}
+
+describe('FileDroppa', () => {
+
+    let builder: TestComponentBuilder;
+    let fixture: ComponentFixture<TestComponent>;
+    let location: Location;
+    let glue: GlueService;
+
+    beforeEachProviders(() => [
+        provide(Location, { useClass: SpyLocation }),
+        GlueService
+    ]);
+
+    beforeEach(inject([TestComponentBuilder, Location, GlueService], (tcb, r, l, g) => {
+        builder = tcb;
+        location = l;
+        glue = g;
+    }));
+
+    afterEach(() => {
+        fixture && fixture.destroy();
+    });
+
+    it('should render', done => {
+        builder.createAsync(TestComponent).then(f => {
+            fixture = f;
             fixture.detectChanges();
-            spyOn(fixture.componentInstance, "fileUploaded");
-            let el = fixture.debugElement.query(By.css('div#child'));
-            el.triggerEventHandler('drop', {
-                preventDefault(){
-                },
-                dataTransfer: {
-                    files: [1, 2, 3],
-                    items: [1, 2, 3]
-                }
-            });
-            window.setTimeout(()=> {
-                expect(fixture.componentInstance.fileUploaded).toHaveBeenCalledWith([1, 2, 3]);
-            }, 300);
+            expect(document.querySelectorAll('.file-droppa-container').length).toBe(1);
+            done();
         });
-    }));
-    it('build hidden input', inject([TestComponentBuilder], (tcb) => {
-        return tcb.createAsync(TestComponent).then((fixture) => {
-            expect(document.querySelector("input[type=\"file\"]._hiddenInputClassName")).toBeTruthy();
-        });
-    }));
+    });
+
 });
 
-
-
-                
