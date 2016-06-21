@@ -33,6 +33,7 @@ import {FilesStore} from "../Services/FileStore.service";
 })
 export class FileDropZone {
     private hiddenFileInput = null;
+    public promise = null;
 
     constructor(private filesStore: FilesStore, private el:ElementRef, private fileParser:FileParser) {
         this.createHiddenInput();
@@ -51,7 +52,7 @@ export class FileDropZone {
         if (!e.dataTransfer || !e.dataTransfer.files.length) {
             return;
         }
-        this.fileParser.processInputFromDrop(e)
+        this.promise = this.fileParser.processInputFromDrop(e)
             .then((files)=> {
                 this.updateFilesStore([...files]);
             });

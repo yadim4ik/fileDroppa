@@ -3,7 +3,7 @@ import {Injectable, EventEmitter, Output, Input, NgZone} from "@angular/core";
 @Injectable()
 export class FileUpload {
     private zone = new NgZone({enableLongStackTrace: false});
-    public autoUpload = true;
+    public autoUpload = false;
     public url = null;
     public beforeRequest = null;
     public beforeFileUpload = null;

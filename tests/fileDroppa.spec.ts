@@ -1,28 +1,23 @@
 import {
     beforeEach,
     afterEach,
-    ddescribe,
-    xdescribe,
     describe,
     expect,
-    iit,
     inject,
     beforeEachProviders,
-    it,
-    xit
+    it
 } from '@angular/core/testing';
 import { ComponentFixture, TestComponentBuilder } from '@angular/compiler/testing';
-import { SpyLocation } from '@angular/common/testing';
 import { Component, ComponentResolver, ViewChild, ContentChild, provide, OnDestroy, Input } from '@angular/core';
-import { Location } from '@angular/common';
+import {By} from '@angular/platform-browser';
 import FileDroppa from '../components/Directives/FileDroppa';
+import {FileDropZone} from "../components/Directives/FileDropZone";
+import {FileList} from "../components/Directives/FileList";
 
-// Needed because ViewChild isn't resolved anymore in the new router
-// https://github.com/angular/angular/issues/4452
-class GlueService {
-    testComponent: TestComponent;
-}
+const createFile = ()=> {
+    return new Blob([["<!doctype html><div>File</div>"]], {type:"text/html"});
 
+};
 
 @Component({
     selector: 'app-component',
@@ -37,33 +32,105 @@ class TestComponent {
 describe('FileDroppa', () => {
 
     let builder: TestComponentBuilder;
-    let fixture: ComponentFixture<TestComponent>;
-    let location: Location;
-    let glue: GlueService;
+    //let fixture: ComponentFixture<TestComponent>;
 
-    beforeEachProviders(() => [
-        provide(Location, { useClass: SpyLocation }),
-        GlueService
-    ]);
-
-    beforeEach(inject([TestComponentBuilder, Location, GlueService], (tcb, r, l, g) => {
+    beforeEach(inject([TestComponentBuilder], (tcb) => {
         builder = tcb;
-        location = l;
-        glue = g;
     }));
-
-    afterEach(() => {
-        fixture && fixture.destroy();
-    });
 
     it('should render', done => {
         builder.createAsync(TestComponent).then(f => {
-            fixture = f;
-            fixture.detectChanges();
             expect(document.querySelectorAll('.file-droppa-container').length).toBe(1);
             done();
         });
     });
+
+    it('adds file on drop', (done) => {
+        builder.createAsync(TestComponent)
+            .then(fixture => {
+                let fileDroppaComponent = fixture.debugElement.query(By.directive(FileDroppa)).componentInstance;
+                let fileDropZone = fixture.debugElement.query(By.directive(FileDropZone));
+                fixture.detectChanges();
+                let event = <any>document.createEvent('MouseEvent');
+                event.initEvent('drop', true, true);
+                event.dataTransfer = {
+                    files:[createFile()]
+                };
+                fileDropZone.nativeElement.dispatchEvent(event);
+                fixture.detectChanges();
+                fixture.debugElement.query(By.directive(FileDropZone)).componentInstance.promise.then(()=>{
+                    expect(fileDroppaComponent.filesStore.files.length).toBe(1);
+                    done();
+                });
+            });
+    });
+
+    it('renders list', (done) => {
+        builder.createAsync(TestComponent)
+            .then(fixture => {
+                let fileDropZone = fixture.debugElement.query(By.directive(FileDropZone));
+                let event = <any>document.createEvent('MouseEvent');
+                event.initEvent('drop', true, true);
+                event.dataTransfer = {
+                    files:[createFile()]
+                };
+                fileDropZone.nativeElement.dispatchEvent(event);
+                fixture.detectChanges();
+                fixture.debugElement.query(By.directive(FileDropZone)).componentInstance.promise.then(()=>{
+                    expect(fixture.debugElement.query(By.directive(FileList))).toBeTruthy();
+                    done();
+                });
+            });
+    });
+
+    it('doesnt render list when it diabled in config', (done) => {
+        builder.createAsync(TestComponent)
+            .then(fixture => {
+                let fileDroppaComponent = fixture.debugElement.query(By.directive(FileDroppa)).componentInstance;
+                fileDroppaComponent.showFilesList = false;
+                let fileDropZone = fixture.debugElement.query(By.directive(FileDropZone));
+                fixture.detectChanges();
+                let event = <any>document.createEvent('MouseEvent');
+                event.initEvent('drop', true, true);
+                event.dataTransfer = {
+                    files:[createFile()]
+                };
+                fileDropZone.nativeElement.dispatchEvent(event);
+                fixture.detectChanges();
+                fixture.debugElement.query(By.directive(FileDropZone)).componentInstance.promise.then(()=>{
+                    expect(fixture.debugElement.query(By.directive(FileList))).toBeFalsy();
+                    done();
+                });
+            });
+    });
+
+
+    it('throws if no url given', (done) => {
+        builder.createAsync(TestComponent)
+            .then(fixture => {
+                let fileDroppaComponent = fixture.debugElement.query(By.directive(FileDroppa)).componentInstance;
+                let fileDropZone = fixture.debugElement.query(By.directive(FileDropZone));
+                fixture.detectChanges();
+                let event = <any>document.createEvent('MouseEvent');
+                event.initEvent('drop', true, true);
+                event.dataTransfer = {
+                    files:[createFile()]
+                };
+                fileDropZone.nativeElement.dispatchEvent(event);
+                fixture.detectChanges();
+                fixture.debugElement.query(By.directive(FileDropZone)).componentInstance.promise.then(()=>{
+                    expect(()=>{
+                        fileDroppaComponent.uploadAllFiles()
+                    }).toThrow();
+                    done();
+                });
+            });
+    });
+
+
+    //it('enables autoUpload', (done) => {
+        //TODO: IMPLEMENT!!
+    //});
 
 });
 
