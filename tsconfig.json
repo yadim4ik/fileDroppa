@@ -11,9 +11,8 @@
     "noLib": false
   },
   "exclude": [
-    "node_modules"
-  ],
-  "files": [
-    "index.ts"
+    "node_modules",
+    "typings/main",
+    "typings/main.d.ts"
   ]
 }

@@ -1,5 +1,3 @@
-///<reference path="../node_modules/typescript/lib/lib.es6.d.ts" />
-
 import {Component, EventEmitter} from '@angular/core';
 import FileDroppa from '../index'
 
@@ -7,8 +5,8 @@ import FileDroppa from '../index'
     selector: 'my-app',
     directives: [FileDroppa],
     template: `<fileDroppa
-                    [url]="'https://salty-taiga-80701.herokuapp.com/upload2'"
-                    [autoUpload]="false"
+                    [url]="'https://salty-taiga-80701.herokuapp.com/upload'"
+                    [autoUpload]="true"
                     [showFilesList]="true"
                     [beforeRequest]="beforeRequest"
                     [beforeFileUpload]="beforeFileUpload"
@@ -53,7 +51,7 @@ export class AppComponent {
      * @param xhr
      */
     beforeRequest(xhr){
-        xhr.setRequestHeader("Hello","World");
+        //xhr.setRequestHeader("Hello","World");
     }
 
     /**

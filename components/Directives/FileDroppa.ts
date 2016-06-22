@@ -102,6 +102,11 @@ export default class FileDroppa {
             }
             this.fileUploaded.emit([success, response, iFile.file]);
         });
+        filesStore.startAutoUploading = this.startAutoUploading.bind(this);
+    }
+
+    private startAutoUploading(iFile){
+        this.autoUpload && this.fileUploadService.uploadFile(iFile);
     }
 
     /**
@@ -109,7 +114,6 @@ export default class FileDroppa {
      */
     ngOnInit(){
         this.filesStore.beforeAddFile = (typeof this.beforeAddFile==="function") ? this.beforeAddFile : (file) => true;
-        this.fileUploadService.autoUpload = this.autoUpload;
         this.fileUploadService.beforeRequest = this.beforeRequest;
         this.fileUploadService.beforeFileUpload = (typeof this.beforeFileUpload==="function") ? this.beforeFileUpload : (formData) => true;
         this.fileUploadService.url = this.url;
