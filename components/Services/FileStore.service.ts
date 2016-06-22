@@ -6,7 +6,7 @@ import {FileWrapper} from "./FileWrapper.service";
 @Injectable()
 export class FilesStore {
     public filesUpdated = new EventEmitter(true);
-
+    public startAutoUploading = null;
     public beforeAddFile:any = null;
 
     private WSfiles:WeakSet<File> = new WeakSet();
@@ -39,7 +39,9 @@ export class FilesStore {
                 return false;
             }
         }).map((file)=> {
-            return new FileWrapper(file);
+            let iFile = new FileWrapper(file);
+            this.startAutoUploading && this.startAutoUploading(iFile);
+            return iFile;
         });
         this.iFiles = [...this.iFiles, ...files];
         this.filesUpdated.emit(true);

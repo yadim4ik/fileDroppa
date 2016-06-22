@@ -6,7 +6,7 @@ import FileDroppa from '../index'
     directives: [FileDroppa],
     template: `<fileDroppa
                     [url]="'https://salty-taiga-80701.herokuapp.com/upload'"
-                    [autoUpload]="false"
+                    [autoUpload]="true"
                     [showFilesList]="true"
                     [beforeRequest]="beforeRequest"
                     [beforeFileUpload]="beforeFileUpload"
@@ -51,7 +51,7 @@ export class AppComponent {
      * @param xhr
      */
     beforeRequest(xhr){
-        xhr.setRequestHeader("Hello","World");
+        //xhr.setRequestHeader("Hello","World");
     }
 
     /**
