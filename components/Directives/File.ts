@@ -6,7 +6,6 @@ import {GetSizePipe} from '../Pipes/GetSize.pipe';
 
 @Component({
     selector: 'fileItem',
-    pipes: [GetSizePipe],
     styles: [`
         .file-container {
             display: flex;

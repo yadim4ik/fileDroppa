@@ -7,7 +7,6 @@ import {FileUpload} from "../Services/FileUpload.service";
 
 @Component({
     selector: 'fileDroppa',
-    directives: [FileDropZone, FileList],
     providers:[FilesStore, FileUpload],
     styles:[`
         .file-droppa-container {
