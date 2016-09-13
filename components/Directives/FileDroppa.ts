@@ -74,7 +74,7 @@ import {FileUpload} from "../Services/FileUpload.service";
         </div>
     `
 })
-export default class FileDroppa {
+export class FileDroppa {
     @Input() showFilesList:boolean = true;
     @Input() autoUpload:boolean = false;
     @Input() beforeRequest:Function = null;
