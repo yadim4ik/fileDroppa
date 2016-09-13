@@ -1,3 +1,3 @@
-import FileDroppa from "./components/Directives/FileDroppa";
+import { FileDroppa } from "./components/module";
 export default FileDroppa;
 

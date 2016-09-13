@@ -1,9 +1,10 @@
-import {Component, EventEmitter} from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { Component, EventEmitter } from '@angular/core';
 import FileDroppa from '../index'
 
 @Component({
     selector: 'my-app',
-    directives: [FileDroppa],
     template: `<fileDroppa
                     [url]="'https://salty-taiga-80701.herokuapp.com/upload'"
                     [autoUpload]="true"
@@ -76,4 +77,17 @@ export class AppComponent {
     beforeAddFile(file){
         return true;
     }
+}
+
+@NgModule({
+  imports: [
+      FileDroppa
+  ],
+  declarations: [
+    AppComponent
+  ],
+  bootstrap: [AppComponent]
+})
+export class DefaultModule {
+
 }

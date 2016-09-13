@@ -6,7 +6,6 @@ import {iFile} from "../Services/FileWrapper.service";
 
 @Component({
     selector: 'fileList, [fileList]',
-    directives: [File],
     styles: [`
         .file-list {
             width: 430px;
