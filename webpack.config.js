@@ -45,13 +45,6 @@ var config = {
     },
 
     entry: {
-        angular2: [
-            // Angular 2 Deps
-            'zone.js/dist/zone',
-            'reflect-metadata',
-            '@angular/common',
-            '@angular/core'
-        ],
         'file-droppa': ['index'],
         'file-droppa-demo': 'demo'
     },

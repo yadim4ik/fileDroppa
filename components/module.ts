@@ -1,3 +1,4 @@
+import '../demo/polyfills';
 import { BrowserModule } from '@angular/platform-browser';
 import {NgModule, Component} from "@angular/core";
 import { FileDroppa as FileDroppaComponent } from "./Directives/FileDroppa";
