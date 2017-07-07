@@ -1,0 +1,82 @@
+{
+  "name": "file-droppa",
+  "version": "1.7.1",
+  "description": "Angular2 (ng2) Files dropable area plus list of files",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/ptkach/fileDroppa.git"
+  },
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "test": "ng test",
+    "lint": "ng lint",
+    "e2e": "ng e2e",
+    "buildlib": "ngm build -p 'lib' --clean"
+  },
+  "main": "bundles/file-droppa.umd.js",
+  "typings": "index.d.ts",
+  "keywords": [
+    "Angular",
+    "Files",
+    "Drop"
+  ],
+  "author": "Pavlo Tkach <work.pashtet@gmail.com> (http://github.com/ptkach)",
+  "homepage": "https://github.com/ptkach/fileDroppa#readme",
+  "license": "MIT",
+  "contributors": [
+    {
+      "name": "Oleksandr Antyneskul",
+      "email": "antyneskul@gmail.com",
+      "url": "https://github.com/Antyneskul"
+    }
+  ],
+  "peerDependencies": {
+    "@angular/common": "~2.0.0",
+    "@angular/compiler": "~2.0.0",
+    "@angular/core": "~2.0.0",
+    "@angular/platform-browser": "~2.0.0",
+    "@angular/platform-browser-dynamic": "~2.0.0",
+    "core-js": "2.4.1",
+    "moment": "2.14.1",
+    "rxjs": "5.0.0-beta.12",
+    "zone.js": "0.6.21"
+  },
+  "devDependencies": {
+    "@angular/common": "~2.0.0",
+    "@angular/compiler": "~2.0.0",
+    "@angular/core": "~2.0.0",
+    "@angular/platform-browser": "~2.0.0",
+    "@angular/platform-browser-dynamic": "~2.0.0",
+    "clean-webpack-plugin": "^0.1.8",
+    "compression-webpack-plugin": "^0.3.1",
+    "core-js": "2.4.1",
+    "eslint": "^2.8.0",
+    "file-loader": "^0.8.5",
+    "gulp": "^3.9.1",
+    "gulp-clean": "*",
+    "gulp-eslint": "^2.0.0",
+    "gulp-tsc": "^1.1.5",
+    "gulp-tslint": "^4.3.5",
+    "html-loader": "^0.4.3",
+    "jasmine-core": "^2.4.1",
+    "karma": "^0.13.22",
+    "karma-chrome-launcher": "^1.0.1",
+    "karma-jasmine": "^1.0.2",
+    "karma-sourcemap-loader": "^0.3.7",
+    "karma-spec-reporter": "0.0.26",
+    "karma-webpack": "^1.7.0",
+    "marked": "^0.3.5",
+    "moment": "2.14.1",
+    "require-dir": "^0.3.0",
+    "rxjs": "5.0.0-beta.12",
+    "ts-loader": "^0.8.2",
+    "tslint": "^3.7.4",
+    "tslint-loader": "^2.1.5",
+    "typescript": "^1.8.10",
+    "webpack": "^1.13.0",
+    "webpack-dev-server": "^1.14.1",
+    "zone.js": "0.6.21"
+  }
+}

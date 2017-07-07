@@ -6,5 +6,11 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'app';
+  title = 'app works!';
+  url = 'https://salty-taiga-80701.herokuapp.com/upload';
+  uploadButtonTemplate = `
+      <div class="my-custom-cls">
+        <span>New Custom</span>
+       </div>
+    `;
 }

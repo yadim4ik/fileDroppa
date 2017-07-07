@@ -1,16 +1,35 @@
 {
-  "name": "july2017",
-  "version": "0.0.0",
-  "license": "MIT",
+  "name": "file-droppa",
+  "version": "1.7.1",
+  "description": "Angular2 (ng2) Files dropable area plus list of files",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/ptkach/fileDroppa.git"
+  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "buildlib": "ngm build -p 'lib' --clean"
   },
-  "private": true,
+  "keywords": [
+    "Angular",
+    "Files",
+    "Drop"
+  ],
+  "author": "Pavlo Tkach <work.pashtet@gmail.com> (http://github.com/ptkach)",
+  "homepage": "https://github.com/ptkach/fileDroppa#readme",
+  "license": "MIT",
+  "contributors": [
+    {
+      "name": "Oleksandr Antyneskul",
+      "email": "antyneskul@gmail.com",
+      "url": "https://github.com/Antyneskul"
+    }
+  ],
   "dependencies": {
     "@angular/animations": "^4.0.0",
     "@angular/common": "^4.0.0",
@@ -41,9 +60,11 @@
     "karma-coverage-istanbul-reporter": "^1.2.1",
     "karma-jasmine": "~1.1.0",
     "karma-jasmine-html-reporter": "^0.2.2",
+    "ngm-cli": "^0.5.2",
     "protractor": "~5.1.2",
     "ts-node": "~3.0.4",
     "tslint": "~5.3.2",
+    "tsm": "^1.0.1",
     "typescript": "~2.3.3"
   }
 }
