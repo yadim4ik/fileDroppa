@@ -8,9 +8,4 @@ import { Component } from '@angular/core';
 export class AppComponent {
   title = 'app works!';
   url = 'https://salty-taiga-80701.herokuapp.com/upload';
-  uploadButtonTemplate = `
-      <div class="my-custom-cls">
-        <span>New Custom</span>
-       </div>
-    `;
 }

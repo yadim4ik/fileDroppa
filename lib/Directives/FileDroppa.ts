@@ -75,8 +75,16 @@ import {FileUpload} from "../Services/FileUpload.service";
             <ng-content></ng-content>
             <fileList *ngIf="showFilesList"></fileList>
             <div class="file-droppa-btns" *ngIf="filesStore.iFiles.length">
-              <div (click)="uploadAllFiles($event)" [innerHTML]="uploadButtonTemplate"></div>
-              <div (click)="removeAllFiles($event)" [innerHTML]="removeButtonTemplate"></div>
+              <div #uploadButtonArea (click)="uploadAllFiles($event)">
+                <ng-content select="[upload-button]"></ng-content>
+              </div>
+              <div *ngIf="uploadButtonArea.children.length === 0" (click)="uploadAllFiles($event)"
+                   [innerHTML]="uploadButtonTemplate"></div>
+              <div #removeButtonArea (click)="removeAllFiles($event)">
+                <ng-content select="[remove-button]"></ng-content>
+              </div>
+              <div *ngIf="removeButtonArea.children.length === 0" (click)="removeAllFiles($event)"
+                   [innerHTML]="removeButtonTemplate"></div>
             </div>
         </div>
     `
