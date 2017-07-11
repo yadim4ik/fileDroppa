@@ -1,5 +1,7 @@
 ## Angular2 (ng2) Files droppable area including list of files which could be managed before upload
 
+[![npm version](https://badge.fury.io/js/file-droppa.svg)](https://badge.fury.io/js/file-droppa)
+
 #### Installation:
 
 ```
