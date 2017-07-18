@@ -42,6 +42,7 @@ export class AppComponent {}
 | [beforeFileUpload] | No  | Callback which is called before specific file is uploaded, called with formData object. Can be used to update formData file name for example |
 | [beforeAddFile] | No  | Callback which is called once you drop or select file and before file is added to fileDroppa file store. Can be used to validate file for example by it's type or size. |
 | [dropZoneTemplate] | No | Can be used to override drop area template |
+| [multiple] | No | If true set `multiple` attribute of hidden file `file` tag. Default true. |
 | (filesUpdated) | No | Callback which will be fired once any file was added or removed with state of files after update |
 | (fileUploaded) | No | Callback which will be fired once any file was uploaded. With operation success, server response and file object |
 

@@ -39,6 +39,16 @@ export class FileDropZone {
         this.createHiddenInput();
     }
 
+    @Input()
+    set multiple(value: boolean) {
+      const attributeName = 'multiple';
+      if (value) {
+        this.hiddenFileInput.setAttribute(attributeName, attributeName);
+      } else {
+        this.hiddenFileInput.removeAttribute(attributeName)
+      }
+    }
+
     /*
      * Host Event Listeners
      * */
