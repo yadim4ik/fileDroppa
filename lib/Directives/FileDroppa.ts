@@ -68,7 +68,7 @@ import {FileUpload} from "../Services/FileUpload.service";
     ],
     template: `
         <div class="file-droppa-container">
-            <fileDropZone>
+            <fileDropZone [multiple]="multiple">
                 <div [innerHTML]="dropZoneTemplate"></div>
             </fileDropZone>
             <br/>
@@ -115,6 +115,7 @@ export class FileDroppa {
         <span>Remove All Files</span>
        </div>
     `;
+    @Input() multiple:boolean = true;
 
     constructor(public filesStore:FilesStore, private fileUploadService: FileUpload){
         filesStore.filesUpdated.subscribe(()=>{
