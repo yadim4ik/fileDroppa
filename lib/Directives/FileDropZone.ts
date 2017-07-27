@@ -1,9 +1,9 @@
 import {Component, ElementRef, Input, EventEmitter, Output, ViewEncapsulation} from '@angular/core';
-import {FileParser} from "../Services/FileParser.service";
-import {FilesStore} from "../Services/FileStore.service";
+import {FileParser} from '../Services/FileParser.service';
+import {FilesStore} from '../Services/FileStore.service';
 
 @Component({
-    selector: 'fileDropZone, [fileDropZone]',
+    selector: 'app-file-drop-zone, [fileDropZone]',
     providers: [FileParser],
     styles: [`
         .file_dropZone_internal {
@@ -31,11 +31,16 @@ import {FilesStore} from "../Services/FileStore.service";
     },
     encapsulation: ViewEncapsulation.None
 })
-export class FileDropZone {
+export class FileDropZoneComponent {
     private hiddenFileInput = null;
     public promise = null;
+    public openTrigger = null;
 
-    constructor(private filesStore: FilesStore, private el:ElementRef, private fileParser:FileParser) {
+    constructor(
+      private filesStore: FilesStore,
+      private el: ElementRef,
+      private fileParser: FileParser
+    ) {
         this.createHiddenInput();
     }
 
@@ -46,6 +51,15 @@ export class FileDropZone {
         this.hiddenFileInput.setAttribute(attributeName, attributeName);
       } else {
         this.hiddenFileInput.removeAttribute(attributeName)
+      }
+    }
+
+    @Input()
+    set openTriggerId(id: string) {
+      // console.log(id);
+      if (id) {
+        this.openTrigger = document.getElementById(id);
+        this.openTrigger.addEventListener('click', () => {this.hiddenFileInput.click()})
       }
     }
 
@@ -63,7 +77,7 @@ export class FileDropZone {
             return;
         }
         this.promise = this.fileParser.processInputFromDrop(e)
-            .then((files)=> {
+            .then((files) => {
                 this.updateFilesStore([...files]);
             });
         this.updateStyles();
@@ -92,33 +106,34 @@ export class FileDropZone {
         this.hiddenFileInput = null;
     }
 
-    updateStyles(dragOver:boolean = false) {
-        //this.el.nativeElement.classList[(dragOver) ? 'add' : 'remove'](this._overCls);
+    updateStyles(dragOver: boolean = false) {
+        // this.el.nativeElement.classList[(dragOver) ? 'add' : 'remove'](this._overCls);
     }
 
-    updateFilesStore(files:Array<File>):void {
+    updateFilesStore(files: Array<File>): void {
         this.filesStore.addFiles(files);
     }
 
     createHiddenInput() {
         this.hiddenFileInput && document.body.removeChild(this.hiddenFileInput);
-        this.hiddenFileInput = document.createElement("input");
-        this.hiddenFileInput.setAttribute("type", "file");
-        this.hiddenFileInput.setAttribute("multiple", "multiple");
-        this.hiddenFileInput.style.visibility = "hidden";
-        this.hiddenFileInput.style.position = "absolute";
-        this.hiddenFileInput.style.top = "0";
-        this.hiddenFileInput.style.left = "0";
-        this.hiddenFileInput.style.height = "0";
-        this.hiddenFileInput.style.width = "0";
-        this.hiddenFileInput.className = "_hiddenInputClassName";
+        this.hiddenFileInput = document.createElement('input');
+        this.hiddenFileInput.setAttribute('type', 'file');
+        this.hiddenFileInput.setAttribute('multiple', 'multiple');
+        this.hiddenFileInput.style.visibility = 'hidden';
+        this.hiddenFileInput.style.position = 'absolute';
+        this.hiddenFileInput.style.top = 0;
+        this.hiddenFileInput.style.left = 0;
+        this.hiddenFileInput.style.height = 0;
+        this.hiddenFileInput.style.width = 0;
+        this.hiddenFileInput.className = '_hiddenInputClassName';
         document.body.appendChild(this.hiddenFileInput);
-        this.hiddenFileInput.addEventListener("change", (e)=> {
-            let files = [];
-            for(let i = 0, l = e.target.files.length;i<l;i++){
+        this.hiddenFileInput.addEventListener('change', (e) => {
+            const files = [];
+            for (let i = 0, l = e.target.files.length; i < l; i++) {
                 files.push(e.target.files[i]);
             }
-            this.hiddenFileInput.value = "";
+            console.log(this.hiddenFileInput.value);
+            this.hiddenFileInput.value = '';
             this.updateFilesStore(files);
         });
     }

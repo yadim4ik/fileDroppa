@@ -1,10 +1,10 @@
-import { CommonModule } from '@angular/common';
-import {NgModule, Component} from "@angular/core";
-import { FileDroppa as FileDroppaComponent } from "./Directives/FileDroppa";
-import {File} from "./Directives/File";
-import {FileDropZone} from "./Directives/FileDropZone";
-import {FileList} from "./Directives/FileList";
-import {GetSizePipe} from "./Pipes/GetSize.pipe";
+import {CommonModule} from '@angular/common';
+import {NgModule} from '@angular/core';
+import {FileDroppaComponent} from './Directives/FileDroppa';
+import {File} from './Directives/File';
+import {FileDropZoneComponent} from './Directives/FileDropZone';
+import {FileListComponent} from './Directives/FileList';
+import {GetSizePipe} from './Pipes/GetSize.pipe';
 
 @NgModule({
     imports: [
@@ -14,16 +14,15 @@ import {GetSizePipe} from "./Pipes/GetSize.pipe";
       GetSizePipe,
       FileDroppaComponent,
       File,
-      FileDropZone,
-      FileList
+      FileDropZoneComponent,
+      FileListComponent
     ],
     exports: [
       FileDroppaComponent,
       File,
-      FileDropZone,
-      FileList
+      FileDropZoneComponent,
+      FileListComponent
     ],
 })
 export class FileDroppa {
-
 }

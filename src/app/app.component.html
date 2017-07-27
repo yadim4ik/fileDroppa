@@ -1,9 +1,19 @@
-<fileDroppa [url]="url">
+<app-file-droppa
+    [url]="url"
+    [openTriggerId]="'some_id'"
+    [showButtons]="false"
+    [showFilesList]="false"
+    [multiple]="false"
+>
   <div class="my-custom-cls" upload-button>
     <span>New Custom</span>
   </div>
-                   <!--<h1>-->
-                        <!--You can pass anything you want here-->
-                        <!--You can set you own file list here-->
-                   <!--</h1>-->
-               </fileDroppa>
+   <!--<h1>-->
+        <!--You can pass anything you want here-->
+        <!--You can set you own file list here-->
+   <!--</h1>-->
+</app-file-droppa>
+
+<br><br>
+
+<span id="some_id">open</span>

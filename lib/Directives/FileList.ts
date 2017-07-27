@@ -1,8 +1,6 @@
-import {Component, Input, EventEmitter, Output, ChangeDetectionStrategy} from '@angular/core';
-import {File} from './File';
-import {FilesStore} from "../Services/FileStore.service";
-import {FileUpload} from "../Services/FileUpload.service";
-import {iFile} from "../Services/FileWrapper.service";
+import {Component} from '@angular/core';
+import {FilesStore} from '../Services/FileStore.service';
+import {iFile} from '../Services/FileWrapper.service';
 
 @Component({
     selector: 'fileList, [fileList]',
@@ -28,11 +26,11 @@ import {iFile} from "../Services/FileWrapper.service";
     `
 })
 
-export class FileList {
-    constructor(public filesStore:FilesStore){
+export class FileListComponent {
+    constructor(public filesStore: FilesStore) {
     }
 
-    removeFile(iFile:iFile) {
+    removeFile(iFile: iFile) {
         this.filesStore.removeFiles(iFile);
     }
 }
