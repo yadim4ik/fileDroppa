@@ -56,7 +56,6 @@ export class FileDropZoneComponent {
 
     @Input()
     set openTriggerId(id: string) {
-      // console.log(id);
       if (id) {
         this.openTrigger = document.getElementById(id);
         this.openTrigger.addEventListener('click', () => {this.hiddenFileInput.click()})
@@ -132,7 +131,6 @@ export class FileDropZoneComponent {
             for (let i = 0, l = e.target.files.length; i < l; i++) {
                 files.push(e.target.files[i]);
             }
-            console.log(this.hiddenFileInput.value);
             this.hiddenFileInput.value = '';
             this.updateFilesStore(files);
         });
